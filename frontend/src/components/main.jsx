@@ -83,7 +83,7 @@ return (
                 }}
             >
                 <Title level={3} style={{ margin: 0 }}>
-                    HELLOOOOOOO Detección y Conteo de Animales en Manadas Densas
+                    Detección y Conteo de Animales en Manadas Densas
                 </Title>
                 <Text type="secondary">Sube y Procesa Tus Imágenes</Text>
             </div>
@@ -117,9 +117,7 @@ return (
                             <p className="ant-upload-text">
                                 Haz clic o arrastra archivos de imagen a esta área para procesarlos
                             </p>
-                            <p className="ant-upload-hint">
-                                Soporta múltiples archivos — simplemente arrástralos aquí.
-                            </p>
+
                         </Dragger>
 
                     </div>
