@@ -47,12 +47,12 @@ def upload_to_s3(image_bytes: bytes, filename: str) -> str:
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     if not file.filename.lower().endswith((".jpg", ".jpeg", ".png")):
-        raise HTTPException(status_code=400, detail="Only image files are supported")
+        raise HTTPException(status_code=400, detail="Solo se permiten imágenes JPG, JPEG o PNG")
 
     try:
         import requests
 
-        url = "https://catfact.ninja/fact"  # Replace with your endpoint
+        url = "https://catfact.ninja/fact" 
         payload = {
             "image_url": "https://example.com/image.jpg",
             "threshold": 0.5
