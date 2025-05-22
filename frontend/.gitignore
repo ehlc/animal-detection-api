@@ -49,5 +49,3 @@ htmlcov/
 
 # AWS credentials (just in case)
 .aws/
-
-frontend/node_modules/
