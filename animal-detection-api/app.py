@@ -46,8 +46,8 @@ def upload_to_s3(image_bytes: bytes, filename: str) -> str:
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith((".jpg", ".jpeg", ".png")):
-        raise HTTPException(status_code=400, detail="Solo se permiten imágenes JPG, JPEG o PNG")
+    if not file.filename.lower().endswith((".jpg", ".jpeg")):
+        raise HTTPException(status_code=400, detail="Solo se permiten imágenes JPG o JPEG")
 
     try:
         import requests
