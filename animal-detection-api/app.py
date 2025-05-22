@@ -10,11 +10,24 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
 
 env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path, override=False) 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify ["http://localhost:5173"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 
 SAMPLE_RESPONSE = '{"url": "", "inference": [  {"class_id": 0, "class_name": "Clase 0", "count": 15, "avg_confidence": 2.03},  {"class_id": 2, "class_name": "Clase 2", "count": 107, "avg_confidence": 5.34},  {"class_id": 4, "class_name": "Clase 4", "count": 29, "avg_confidence": 4.13},  {"class_id": 5, "class_name": "Clase 5", "count": 9, "avg_confidence": 1.88}]}'
