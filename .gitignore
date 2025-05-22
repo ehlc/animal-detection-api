@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# VSCode settings
+.vscode/
+
+# MacOS and Windows system files
+.DS_Store
+Thumbs.db
+
+# Python package/build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Pytest
+.cache/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# mypy, coverage, and pytest reports
+.mypy_cache/
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# S3 temporary files (if applicable)
+*.boto
+
+# Model weights or large files (if tracked manually)
+*.pth
+*.pt
+*.ckpt
+
+# AWS credentials (just in case)
+.aws/
