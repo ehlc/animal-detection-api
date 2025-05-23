@@ -213,7 +213,7 @@ export default function Main() {
           <div style={{ display: 'flex', padding: 24, background: '#fff', borderRadius: 8 }}>
             <div style={{ flex: 2 }}>
               <Dragger
-                accept="image/*"
+                accept="image/jpeg,.jpg,.jpeg"
                 multiple={false}
                 customRequest={customUpload}
                 listType="picture"
