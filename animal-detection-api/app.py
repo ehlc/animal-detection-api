@@ -1,89 +1,53 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import JSONResponse
-import boto3
-import os
-import uuid
-import json
 import requests
-
 from pathlib import Path
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
-from fastapi.middleware.cors import CORSMiddleware
-
-
-
-
 env_path = Path(__file__).parent / ".env"
-load_dotenv(dotenv_path=env_path, override=False) 
+load_dotenv(dotenv_path=env_path, override=False)
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify ["http://localhost:5173"]
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+MODEL_ENDPOINTS = {
+    "herdnet": os.getenv("HERDNET_URL"),
+    "maskrcnn": os.getenv("MASKRCNN_URL"),
+    "detr": os.getenv("DETR_URL")
+}
 
-
-SAMPLE_RESPONSE = '{"url": "", "inference": [  {"class_id": 0, "class_name": "Clase 0", "count": 15, "avg_confidence": 2.03},  {"class_id": 2, "class_name": "Clase 2", "count": 107, "avg_confidence": 5.34},  {"class_id": 4, "class_name": "Clase 4", "count": 29, "avg_confidence": 4.13},  {"class_id": 5, "class_name": "Clase 5", "count": 9, "avg_confidence": 1.88}]}'
-S3_BUCKET = os.getenv("S3_BUCKET")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_REGION = os.getenv("REGION_NAME")
-
-
-session = boto3.Session(
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    region_name=AWS_REGION,
-)
-
-
-s3_client = boto3.client("s3", region_name=AWS_REGION)
-sagemaker_client = boto3.client("sagemaker-runtime", region_name=AWS_REGION)
-
-def upload_to_s3(image_bytes: bytes, filename: str) -> str:
-    s3_key = f"inference-inputs/{uuid.uuid4()}-{filename}"
-    s3_client.put_object(
-        Bucket=S3_BUCKET,
-        Key="image_uploads/" + s3_key,
-        Body=image_bytes,
-        ContentType="image/jpeg"
-    )
-    return f"s3://{S3_BUCKET}/{s3_key}"
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith((".jpg", ".jpeg")):
-        raise HTTPException(status_code=400, detail="Solo se permiten imágenes JPG o JPEG")
-
+async def predict(
+    file: UploadFile = File(...),
+    model: str = Form("herdnet")
+):
     try:
-        import requests
+        external_url = MODEL_ENDPOINTS.get(model)
+        if not external_url:
+            raise HTTPException(status_code=400, detail=f"Invalid model '{model}'")
 
-        url = "https://catfact.ninja/fact" 
-        payload = {
-            "image_url": "https://example.com/image.jpg",
-            "threshold": 0.5
+        file_bytes = await file.read()
+
+        files = {
+            "file": (file.filename, file_bytes, file.content_type)
         }
 
-        # response = requests.post(url, json=payload)
-        response = requests.get(url)
-        
-        if response.status_code == 200:
-            print("✅ Success:", response.json())
-        else:
-            print(f"Error {response.status_code}:", response.text)
+        response = requests.post(external_url, files=files)
+        response.raise_for_status()
 
+        return JSONResponse(content=response.json())
 
-
-        # result = response["Body"].read().decode("utf-8")
-        # return JSONResponse(content={"prediction": "image"})
-        return SAMPLE_RESPONSE
-
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Failed to forward request: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
