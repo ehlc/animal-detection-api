@@ -44,12 +44,26 @@ export default function Main() {
   const [preview, setPreview] = useState({ open: false, currentIndex: 0 });
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState('1');
-  const [currentPreview, setCurrentPreview] = useState(null);
 
   const tabData = [
-    { key: '1', label: 'HerdNet', endpoint: 'http://186.28.107.11:8080/predict' },
-    { key: '2', label: 'Mask R-CNN', endpoint: 'http://186.28.107.11:8080/predict' },
-    { key: '3', label: 'DETR', endpoint: 'http://186.28.107.11:8080/predict' },
+    {
+      key: '1',
+      label: 'HerdNet',
+      endpoint: 'https://jzuezmhit2.us-east-1.awsapprunner.com/predict',
+      model: 'herdnet',
+    },
+    {
+      key: '2',
+      label: 'Mask R-CNN',
+      endpoint: 'https://jzuezmhit2.us-east-1.awsapprunner.com/predict',
+      model: 'maskrcnn',
+    },
+    {
+      key: '3',
+      label: 'DETR',
+      endpoint: 'https://jzuezmhit2.us-east-1.awsapprunner.com/predict',
+      model: 'detr',
+    },
   ];
 
   const customUpload = ({ file, onSuccess }) => {
@@ -66,9 +80,12 @@ export default function Main() {
     if (file.status === 'done' && file.originFileObj) {
       const formData = new FormData();
 
-      formData.append('file', file.originFileObj, file.name);
+      const tabDataItem = tabData.find((tab) => tab.key === selectedTab);
 
-      const endpoint = tabData.find((tab) => tab.key === selectedTab)?.endpoint;
+      formData.append('file', file.originFileObj, file.name);
+      formData.append('model', tabDataItem?.model);
+
+      const endpoint = tabDataItem?.endpoint;
 
       try {
         const res = await fetch(endpoint, {
@@ -107,7 +124,6 @@ export default function Main() {
   const showPreview = (idx, img) => {
     images[idx].data = img.data;
     setImage([...images]);
-    setCurrentPreview(img);
     setPreview({ open: true, currentIndex: idx, data: img.data });
   };
 
