@@ -254,11 +254,6 @@ export default function Main() {
             label: 'Mask R-CNN',
             children: <div></div>,
           },
-          {
-            key: '3',
-            label: 'DETR',
-            children: <div></div>,
-          },
         ]}
       />
       <div
