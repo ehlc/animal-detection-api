@@ -66,6 +66,44 @@ export default function Main() {
     },
   ];
 
+  const classColors = [
+    {
+      color: '(255, 0, 0)',
+      label: 'Rojo',
+      animal: 'Top',
+    },
+    {
+      color: '(0, 255, 0)',
+      label: 'Verde',
+      animal: 'Buffalo',
+    },
+    {
+      color: '(0, 0, 255)',
+      label: 'Azul',
+      animal: 'Kob',
+    },
+    {
+      color: '(255, 255, 0)',
+      label: 'Amarillo',
+      animal: 'Warthog',
+    },
+    {
+      color: '(255, 0, 255)',
+      label: 'Magenta',
+      animal: 'Warthog',
+    },
+    {
+      color: '(0, 255, 255)',
+      label: 'Cian',
+      animal: 'Elephant',
+    },
+    {
+      color: '(128, 0, 128)',
+      label: 'Púrpura',
+      animal: 'Fondo imagen',
+    },
+  ];
+
   const customUpload = ({ file, onSuccess }) => {
     const reader = new FileReader();
     reader.onload = () => onSuccess({ url: reader.result });
@@ -143,8 +181,37 @@ export default function Main() {
 
   const currentImg = images[preview.currentIndex] || {};
 
-  console.log('images', images);
-  console.log('currentImg', currentImg);
+  const tableStyle = {
+    display: 'inline-block',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    overflow: 'hidden',
+    fontFamily: 'Arial, sans-serif',
+    width: '100%',
+  };
+
+  // Row styling
+  const headerRowStyle = {
+    display: 'flex',
+    backgroundColor: '#f5f5f5',
+    fontWeight: 'bold',
+  };
+  const rowStyle = {
+    display: 'flex',
+    borderTop: '1px solid #eee',
+  };
+
+  // Cell styling
+  const cellStyle = {
+    flex: 1,
+    padding: '8px',
+    borderRight: '1px solid #eee',
+    textAlign: 'center',
+  };
+  const lastCellStyle = {
+    ...cellStyle,
+    borderRight: 'none',
+  };
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
@@ -324,16 +391,38 @@ export default function Main() {
           Modelo: <b>{currentImg.model}</b> <br />
           <br />
           Cantidad:{' '}
-          {images[preview.currentIndex]?.data?.inferences?.reduce(
-            (sum, item) => sum + item.count,
-            0,
-          )}{' '}
+          <span style={{ fontWeight: 'bold' }}>
+            {images[preview.currentIndex]?.data?.inferences?.reduce(
+              (sum, item) => sum + item.count,
+              0,
+            )}{' '}
+          </span>
           <br />
-          {images[preview.currentIndex]?.data?.inferences?.map((item, index) => (
-            <div key={index}>
-              Clase {item.label} {item.class_id}: {item.count}
+          <br />
+          <div style={tableStyle}>
+            {/* Header */}
+            <div style={headerRowStyle}>
+              <div style={cellStyle}>Class ID</div>
+              <div style={cellStyle}>Color</div>
+              <div style={cellStyle}>Animal</div>
+              <div style={lastCellStyle}>Conteo</div>
             </div>
-          ))}
+
+            {/* Data rows */}
+            {images[preview.currentIndex]?.data?.inferences?.map((item, idx) => {
+              const color = `rgb${classColors[item.class_id].color}`;
+              return (
+                <div key={idx} style={rowStyle}>
+                  <div style={cellStyle}>{item.class_id}</div>
+                  <div style={{ ...cellStyle, color, fontWeight: 'bold' }}>
+                    {classColors[item.class_id].label}
+                  </div>
+                  <div style={cellStyle}>{classColors[item.class_id].animal}</div>
+                  <div style={lastCellStyle}>{item.count}</div>
+                </div>
+              );
+            })}
+          </div>
         </Modal>
       </Content>
     </Layout>
