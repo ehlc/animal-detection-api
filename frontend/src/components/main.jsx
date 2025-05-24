@@ -399,30 +399,30 @@ export default function Main() {
           </span>
           <br />
           <br />
-          <div style={tableStyle}>
-            {/* Header */}
-            <div style={headerRowStyle}>
-              <div style={cellStyle}>Class ID</div>
-              <div style={cellStyle}>Color</div>
-              <div style={cellStyle}>Animal</div>
-              <div style={lastCellStyle}>Conteo</div>
-            </div>
+          {currentImg.model !== 'Mask R-CNN' && currentImg.model !== 'DETR' && (
+            <div style={tableStyle}>
+              <div style={headerRowStyle}>
+                <div style={cellStyle}>Class ID</div>
+                <div style={cellStyle}>Color</div>
+                <div style={cellStyle}>Animal</div>
+                <div style={lastCellStyle}>Conteo</div>
+              </div>
 
-            {/* Data rows */}
-            {images[preview.currentIndex]?.data?.inferences?.map((item, idx) => {
-              const color = `rgb${classColors[item.class_id].color}`;
-              return (
-                <div key={idx} style={rowStyle}>
-                  <div style={cellStyle}>{item.class_id}</div>
-                  <div style={{ ...cellStyle, color, fontWeight: 'bold' }}>
-                    {classColors[item.class_id].label}
+              {images[preview.currentIndex]?.data?.inferences?.map((item, idx) => {
+                const color = `rgb${classColors[item.class_id].color}`;
+                return (
+                  <div key={idx} style={rowStyle}>
+                    <div style={cellStyle}>{item.class_id}</div>
+                    <div style={{ ...cellStyle, color, fontWeight: 'bold' }}>
+                      {classColors[item.class_id].label}
+                    </div>
+                    <div style={cellStyle}>{classColors[item.class_id].animal}</div>
+                    <div style={lastCellStyle}>{item.count}</div>
                   </div>
-                  <div style={cellStyle}>{classColors[item.class_id].animal}</div>
-                  <div style={lastCellStyle}>{item.count}</div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </Modal>
       </Content>
     </Layout>
